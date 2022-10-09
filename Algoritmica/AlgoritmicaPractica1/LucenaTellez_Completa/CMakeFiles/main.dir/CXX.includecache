@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica1/LucenaTellez_Completa/main.cpp
+iostream
+-
+

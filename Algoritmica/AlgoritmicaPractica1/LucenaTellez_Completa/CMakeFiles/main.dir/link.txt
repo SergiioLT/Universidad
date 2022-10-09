@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/main.dir/main.cpp.o CMakeFiles/main.dir/ClaseTiempo.cpp.o CMakeFiles/main.dir/ordenacionQuickSort.cpp.o CMakeFiles/main.dir/determinanteIterativo.cpp.o CMakeFiles/main.dir/determinanteRecursivo.cpp.o CMakeFiles/main.dir/sistemaEcuaciones.cpp.o CMakeFiles/main.dir/funcionesGlobales.cpp.o  -o main 

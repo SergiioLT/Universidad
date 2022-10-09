@@ -1,0 +1,3 @@
+/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica1/LucenaTellez_Completa/CMakeFiles/rebuild_cache.dir
+/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica1/LucenaTellez_Completa/CMakeFiles/edit_cache.dir
+/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica1/LucenaTellez_Completa/CMakeFiles/main.dir

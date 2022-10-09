@@ -1,4 +1,0 @@
-/home/serlute/Descargas/MaterialPractica1/CMakeFiles/main.dir
-/home/serlute/Descargas/MaterialPractica1/CMakeFiles/test.dir
-/home/serlute/Descargas/MaterialPractica1/CMakeFiles/edit_cache.dir
-/home/serlute/Descargas/MaterialPractica1/CMakeFiles/rebuild_cache.dir
