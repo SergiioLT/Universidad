@@ -23,6 +23,12 @@ using namespace util;
 // Constructor: Default values for all the parameters
 MultilayerPerceptron::MultilayerPerceptron()
 {
+	eta = 0.1;
+	mu = 0.9;
+
+	nOfLayers = 1;
+	layers = NULL;
+
 
 }
 
@@ -54,8 +60,8 @@ int MultilayerPerceptron::initialize(int nl, int npl[]) {
 		}
 	}
 	return 0;
-}
 
+}
 
 // ------------------------------
 // DESTRUCTOR: free memory
@@ -64,15 +70,11 @@ MultilayerPerceptron::~MultilayerPerceptron() {
 	cout<<"free memory"<<endl;
 }
 
-
 // ------------------------------
 // Free memory for the data structures
 void MultilayerPerceptron::freeMemory() {
 	
 	for(int i=0; i<nOfLayers; i++){
-		if( i==0 )
-			delete[] layers[0].neurons;
-		
 		for(int j=0 ; j<layers[i].nOfNeurons; j++){
 			if(i>0){ //+1 because w0
 				delete[] layers[i].neurons[j].w ;
@@ -82,18 +84,17 @@ void MultilayerPerceptron::freeMemory() {
 			}
 		}
 	}
-
+	delete[] layers[0].neurons;
 	delete[] layers;
 }
-
 
 // ------------------------------
 // Feel all the weights (w) with random numbers between -1 and +1
 void MultilayerPerceptron::randomWeights() {
 
-	for(int i=0; i<nOfLayers; i++){
+	for(int i=1; i<nOfLayers; i++){
 		for(int j=0; j<layers[i].nOfNeurons; j++){
-			for(int k=0; k<layers[i-1].nOfNeurons+1; k++){ //+1 because w0
+			for(int k=0; k<layers[i-1].nOfNeurons+1; k++){ 
 				layers[i].neurons[j].w[k] = randomDouble(-1,1);
 			}
 		}
@@ -104,7 +105,7 @@ void MultilayerPerceptron::randomWeights() {
 // ------------------------------
 // Feed the input neurons of the network with a vector passed as an argument
 void MultilayerPerceptron::feedInputs(double* input) {
-//We only need to fill the first layer
+
 	for(int i=0; i<layers[0].nOfNeurons; i++){ 
 		layers[0].neurons[i].out = input[i];
 	}
@@ -115,7 +116,7 @@ void MultilayerPerceptron::feedInputs(double* input) {
 // Get the outputs predicted by the network (out vector the output layer) and save them in the vector passed as an argument
 void MultilayerPerceptron::getOutputs(double* output)
 {
-//We only need get the outputs from the last layer
+
 	for(int i=0; i< layers[nOfLayers-1].nOfNeurons; i++){
 		output[i] = layers[nOfLayers-1].neurons[i].out;
 	}
@@ -128,7 +129,7 @@ void MultilayerPerceptron::copyWeights() {
 
 	for(int i=1; i < nOfLayers; i++){
 		for(int j=0; j< layers[i].nOfNeurons; j++){
-			for(int k=0; k< layers[i-1].nOfNeurons + 1; k++){ //+1 because w0
+			for(int k=0; k< layers[i-1].nOfNeurons + 1; k++){ 
 				layers[i].neurons[j].wCopy[k] = layers[i].neurons[j].w[k];
 			}
 		}
@@ -142,7 +143,7 @@ void MultilayerPerceptron::restoreWeights() {
 	
 	for(int i=1; i < nOfLayers; i++){
 		for(int j=0; j< layers[i].nOfNeurons; j++){
-			for(int k=0; k< layers[i-1].nOfNeurons + 1; k++){ //+1 because w0
+			for(int k=0; k< layers[i-1].nOfNeurons + 1; k++){ 
 				layers[i].neurons[j].w[k] = layers[i].neurons[j].wCopy[k];
 			}
 		}
@@ -155,12 +156,12 @@ void MultilayerPerceptron::restoreWeights() {
 void MultilayerPerceptron::forwardPropagate() {
 	
 	for(int i=1; i<nOfLayers; i++){
-		for(int j=1; i<layers[i].nOfNeurons; j++){
+		for(int j=0; i<layers[i].nOfNeurons; j++){
 			double net = 0.0;
 			net += layers[i-1].neurons[j].w[0];
 
-			for(int k=0; k<layers[i-1].nOfNeurons +1;k++){
-				net += layers[i].neurons[j].w[k] * layers[i-1].neurons[j].out; //Net <- wj0 + sum (wji (layer) * out (layer -1))
+			for(int k=1; k<layers[i-1].nOfNeurons+1;k++){
+				net += layers[i].neurons[j].w[k] * layers[i-1].neurons[k-1].out; //Net <- wj0 + sum (wji (layer) * out (layer -1))
 			}
 
 			layers[i].neurons[j].out = 1/(1+ exp(-net));
@@ -172,9 +173,21 @@ void MultilayerPerceptron::forwardPropagate() {
 // ------------------------------
 // Obtain the output error (MSE) of the out vector of the output layer wrt a target vector and return it
 double MultilayerPerceptron::obtainError(double* target) {
-	return -1;
-}
+	
+	int size = layers[nOfLayers-1].nOfNeurons;
+	double* pred = new double[size];
+	double mse = 0.0;
+	getOutputs(pred);
 
+	for(int i=0; i< size; i++){
+		mse += pow((pred[i] - target[i]),2);
+	}
+
+	delete[] pred;
+	
+	return (mse/layers[nOfLayers-1].nOfNeurons);
+
+}
 
 // ------------------------------
 // Backpropagate the output error wrt a vector passed as an argument, from the last layer to the first one <--<--
@@ -189,20 +202,27 @@ void MultilayerPerceptron::backpropagateError(double* target) {
 		for(int j=0; j<layers[i].nOfNeurons; j++){
 			double out = layers[i].neurons[j].out;
 			double sum = 0.0;
-			for(int k=0; k<layers[i-1].nOfNeurons;k++){
+			for(int k=0; k<layers[i+1].nOfNeurons;k++){
 				sum += layers[i+1].neurons[k].w[j+1]*layers[i+1].neurons[k].delta;
 			}
-			layers[i].neurons[j].delta = sum*(1-out)*out;
+			layers[i].neurons[j].delta = sum*out*(1-out);
 		}
 	}
 
 }
 
-
 // ------------------------------
 // Accumulate the changes produced by one pattern and save them in deltaW
 void MultilayerPerceptron::accumulateChange() {
 
+	for(int i=1; i<nOfLayers; i++){
+		for(int j=0; j<layers[i].nOfNeurons; j++){
+			for(int k=1; k<layers[i-1].nOfNeurons+1; k++){
+				layers[i].neurons[j].deltaW[k] += layers[i].neurons[j].delta * layers[i-1].neurons[k-1].out;
+			}
+			layers[i].neurons[j].deltaW[0] += layers[i].neurons[j].delta;
+		}
+	}
 
 }
 
@@ -210,6 +230,14 @@ void MultilayerPerceptron::accumulateChange() {
 // Update the network weights, from the first layer to the last one
 void MultilayerPerceptron::weightAdjustment() {
 
+	for(int i=1; i<nOfLayers; i++){
+		for(int j=0; j<layers[i].nOfNeurons; j++){
+			for(int k=1; k<layers[i-1].nOfNeurons+1;k++){
+				layers[i].neurons[j].w[k] = layers[i].neurons[j].w[k] - eta*layers[i].neurons[j].deltaW[k] - mu* (eta*layers[i].neurons[j].lastDeltaW[k]);
+			}
+			layers[i].neurons[j].w[0] = layers[i].neurons[j].w[0] - eta*layers[i].neurons[j].deltaW[0] - mu* (eta*layers[i].neurons[j].lastDeltaW[0]);
+		}
+	}
 
 }
 
@@ -265,7 +293,14 @@ void MultilayerPerceptron::trainOnline(Dataset* trainDataset) {
 // ------------------------------
 // Test the network with a dataset and return the MSE
 double MultilayerPerceptron::test(Dataset* testDataset) {
-	return -1.0;
+	double error = 0.0;
+
+	for(int i=0; i< testDataset->nOfPatterns; i++){
+		feedInputs(testDataset->inputs[i]);
+		forwardPropagate();
+		error = obtainError(testDataset->outputs[i]);
+	}
+	return (error/testDataset->nOfPatterns);
 }
 
 

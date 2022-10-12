@@ -25,22 +25,24 @@ using namespace util;
 
 int main(int argc, char **argv) {
     // Process arguments of the command line
-    bool Tflag = 0, wflag = 0, pflag = 0;
-    char *Tvalue = NULL, *wvalue = NULL;
+    bool Tflag = 0, wflag = 0, pflag = 0, tflag = 0, iflag = 0, lflag = 0, hflag = 0, eflag = 0, mflag = 0, sflag = 0;
+    char *TestFilename = NULL, *TrainFilename = NULL,*wvalue = NULL;
     int c;
+    int numIteration = 1000, neuroLayer = 5, hiddenLayer = 1;
+    double eta = 0.1, mu = 0.9;
 
     opterr = 0;
 
     // a: Option that requires an argument
     // a:: The argument required is optional
-    while ((c = getopt(argc, argv, "T:w:p")) != -1)
+    while ((c = getopt(argc, argv, "T:w:p:t:i:l:h:e:m:s")) != -1)
     {
         // The parameters needed for using the optional prediction mode of Kaggle have been included.
         // You should add the rest of parameters needed for the lab assignment.
         switch(c){
             case 'T':
                 Tflag = true;
-                Tvalue = optarg;
+                TestFilename = optarg;
                 break;
             case 'w':
                 wflag = true;
@@ -49,8 +51,35 @@ int main(int argc, char **argv) {
             case 'p':
                 pflag = true;
                 break;
+            case 't':
+                tflag = true;
+                TrainFilename = optarg;
+                break;
+            case 'i':
+                iflag = true;
+                numIteration = atoi(optarg);
+                break;
+            case 'l':
+                lflag = true;
+                hiddenLayer = atoi(optarg);
+                break;
+            case 'h':
+                hflag = true;
+                neuroLayer = atoi(optarg);
+                break;
+            case 'e':
+                eflag = true;
+                eta = atof(optarg);
+                break;
+            case 'm':
+                mflag = true;
+                mu = atof(optarg);
+                break;
+            case 's':
+                sflag = true;
+                break;
             case '?':
-                if (optopt == 'T' || optopt == 'w' || optopt == 'p')
+                if (optopt == 'T' || optopt == 'w' || optopt == 'p' || optopt == 't' || optopt == 'i' || optopt == 'l' || optopt == 'h'|| optopt == 'e' || optopt == 'm' || optopt == 's')
                     fprintf (stderr, "The option -%c requires an argument.\n", optopt);
                 else if (isprint (optopt))
                     fprintf (stderr, "Unknown option `-%c'.\n", optopt);
@@ -73,15 +102,31 @@ int main(int argc, char **argv) {
     	MultilayerPerceptron mlp;
 
         // Parameters of the mlp. For example, mlp.eta = value;
-    	int iterations = -1; // This should be corrected
+    	int iterations = numIteration;
+        mlp.eta = eta;
+        mlp.mu = mu;
+
+        Dataset * trainDataset; 
+        Dataset * testDataset;
+
+
 
         // Read training and test data: call to util::readData(...)
-    	Dataset * trainDataset = NULL; // This should be corrected
-    	Dataset * testDataset = NULL; // This should be corrected
+        if(sflag==false){
+            trainDataset = readData(TrainFilename); 
+            testDataset = readData(TestFilename);
+        }
+
 
         // Initialize topology vector
-    	int layers=-1; // This should be corrected
-    	int * topology=NULL; // This should be corrected
+    	int layers = hiddenLayer; 
+    	int * topology = new int[hiddenLayer+2]; 
+
+        topology[0] = trainDataset->nOfInputs;
+        for(int i=1; i<hiddenLayer+1; i++){
+            topology[i] = neuroLayer;
+        }
+        topology[hiddenLayer+1] = trainDataset->nOfOutputs;
 
         // Initialize the network using the topology vector
         mlp.initialize(layers+2,topology);
@@ -114,6 +159,21 @@ int main(int argc, char **argv) {
         double averageTrainError = 0, stdTrainError = 0;
         
         // Obtain training and test averages and standard deviations
+        for(int i=0; i<5; i++){
+            averageTrainError += trainErrors[i];
+            averageTestError += testErrors[i];
+        }
+
+        averageTrainError = averageTrainError/5;
+        averageTestError = averageTestError/5;
+        
+        for(int i=0; i<5; i++){
+            stdTrainError += pow(trainErrors[i] - averageTrainError,2);
+            stdTestError += pow(testErrors[i] - averageTestError,2);    
+        }
+
+        stdTrainError = sqrt(stdTrainError/5);
+        stdTestError = sqrt(stdTestError/5);
 
         cout << "FINAL REPORT" << endl;
         cout << "************" << endl;
@@ -139,7 +199,7 @@ int main(int argc, char **argv) {
 
         // Reading training and test data: call to util::readData(...)
         Dataset *testDataset;
-        testDataset = readData(Tvalue);
+        testDataset = readData(TestFilename);
         if(testDataset == NULL)
         {
             cerr << "The test file is not valid, we can not continue" << endl;
