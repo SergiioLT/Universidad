@@ -156,26 +156,17 @@ void MultilayerPerceptron::restoreWeights() {
 void MultilayerPerceptron::forwardPropagate() {
 	
 	for(int i=1; i<nOfLayers; i++){
-		for(int j=0; i<layers[i].nOfNeurons; j++){
+		for(int j=0; j<layers[i].nOfNeurons; j++){
 			double net = 0.0;
+			net += layers[i].neurons[j].w[0];
+
 			for(int k=1; k<layers[i-1].nOfNeurons+1;k++){
 				net += layers[i].neurons[j].w[k] * layers[i-1].neurons[k-1].out; //Net <- wj0 + sum (wji (layer) * out (layer -1))
 			}
-			net += layers[i].neurons[j].w[0];
+			
 			layers[i].neurons[j].out = 1.0/(1+ exp(-net));
 		}
 	}
-
-	// for(int i=1; i<nOfLayers; i++){ //recorremos las capas
-	// 	for(int j=0;j<layers[i].nOfNeurons; j++){ //recorremos las neuronas en las capas
-	// 		double net = 0.0;
-	// 		for(int k=1; k<layers[i-1].nOfNeurons+1; k++){ //recorremos capa anterior + sesgo
-	// 			net += layers[i].neurons[j].w[k]*layers[i-1].neurons[k-1].out; //sumatorio pesos*salida
-	// 		}
-	// 		net += layers[i].neurons[j].w[0]; //sesgo
-	// 		layers[i].neurons[j].out = 1.0/(1 + exp(-net)); //actualización del out (fun. sigmoide(net))
-	// 	}
-	// }
 
 }
 
@@ -281,17 +272,11 @@ void MultilayerPerceptron::performEpochOnline(double* input, double* target) {
 			}
 		}
 	}
-	cout <<" flag 2"<<endl;
 	feedInputs(input);
-	cout <<" flag 3"<<endl;
 	forwardPropagate();
-	cout <<" flag 4"<<endl;
 	backpropagateError(target);
-	cout <<" flag 5"<<endl;
 	accumulateChange();
-	cout <<" flag 6"<<endl;
 	weightAdjustment();
-	cout <<" flag 7"<<endl;
 }
 
 // ------------------------------
