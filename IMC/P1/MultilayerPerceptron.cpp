@@ -345,7 +345,6 @@ void MultilayerPerceptron::runOnlineBackPropagation(Dataset * trainDataset, Data
 	// Learning
 	do {
 		trainOnline(trainDataset);
-		cout <<" flag 1"<<endl;
 		double trainError = test(trainDataset);
 		if(countTrain==0 || trainError < minTrainError){
 			minTrainError = trainError;
