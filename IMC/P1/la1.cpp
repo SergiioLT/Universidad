@@ -25,7 +25,7 @@ using namespace util;
 
 int main(int argc, char **argv) {
     // Process arguments of the command line
-    bool Tflag = 0, wflag = 0, pflag = 0, tflag = 0, iflag = 0, lflag = 0, hflag = 0, eflag = 0, mflag = 0, sflag = 0;
+    bool Tflag = 0, wflag = 0, pflag = 0, tflag = 0, iflag = 0, lflag = 0, hflag = 0, eflag = 0, mflag = 0, sflag = false;
     char *TestFilename = NULL, *TrainFilename = NULL,*wvalue = NULL;
     int c;
     int numIteration = 1000, neuroLayer = 5, hiddenLayer = 1;
@@ -109,12 +109,46 @@ int main(int argc, char **argv) {
         Dataset * trainDataset; 
         Dataset * testDataset;
 
+        double minTrainOutput, maxOutput;
+
 
 
         // Read training and test data: call to util::readData(...)
         if(sflag==false){
             trainDataset = readData(TrainFilename); 
             testDataset = readData(TestFilename);
+        }else{
+            // trainDataset = readData(TrainFilename); 
+            // testDataset = readData(TestFilename);
+            // double *minTrainInput, *maxTrainInput;
+
+            // cout<<"Antes de normalizar"<<endl;
+            // printDataset(trainDataset,trainDataset->nOfPatterns);
+
+            // //Normalize train dataset
+            // // minTrainInput = minDatasetInputs(trainDataset);
+            // // maxTrainInput = maxDatasetInputs(trainDataset);
+            // cout<<"Antes de normalizar"<<endl;
+            // minTrainInput = minDatasetInputs(trainDataset);
+
+            // for(int i=0; i<trainDataset->nOfPatterns;i++){
+            //     cout<<"Valor en el main : "<<i <<" "<<minTrainInput[i]<<endl;
+            // }
+
+            // maxTrainInput = maxDatasetInputs(trainDataset);
+
+            // minTrainOutput = minDatasetOutputs(trainDataset);
+            // maxOutput =  maxDatasetOutputs(trainDataset);
+
+            // minMaxScalerDataSetInputs(trainDataset, -1, 1, minTrainInput ,maxTrainInput);
+            // minMaxScalerDataSetInputs(testDataset, 0, 1, minTrainInput, maxTrainInput);
+            
+            // minMaxScalerDataSetOutputs(trainDataset, -1, 1, minTrainOutput, maxOutput);
+            // minMaxScalerDataSetOutputs(testDataset, 0, 1, minTrainOutput, maxOutput);
+
+            // cout<<"Despues de normalizar"<<endl;
+            // printDataset(trainDataset,trainDataset->nOfPatterns);
+
         }
 
 
@@ -142,6 +176,7 @@ int main(int argc, char **argv) {
             cout << "SEED " << seeds[i] << endl;
             cout << "**********" << endl;
             srand(seeds[i]);
+            //cout<<"a"<<endl;
             mlp.runOnlineBackPropagation(trainDataset,testDataset,iterations,&(trainErrors[i]),&(testErrors[i]));
             cout << "We end!! => Final test error: " << testErrors[i] << endl;
 
