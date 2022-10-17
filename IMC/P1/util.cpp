@@ -121,7 +121,13 @@ void util::printDataset(Dataset *dataset, int len)
 // and max values of the feature in the dataset (minData and maxData). 
 double util::minMaxScaler(double x, double minAllowed, double maxAllowed, double minData, double maxData)
 {
-    x = maxAllowed + (((x - minData)*(minAllowed-maxAllowed))/(maxData-minData));
+    if(maxData-minData==0){
+        x=minAllowed;
+    }else{
+        //cout<<"x: "<<x<<" minAllowed: "<< minAllowed<< " maxAllowed: "<<maxAllowed<< " minData: "<<minData<< " maxData: "<<maxData<<endl;
+        x = minAllowed + ((x - minData)*(maxAllowed-minAllowed))/(maxData-minData);
+        //cout<<"Resultado: "<<x<<endl;
+    }
 
     return x;    
 }
@@ -132,9 +138,6 @@ double util::minMaxScaler(double x, double minAllowed, double maxAllowed, double
 void util::minMaxScalerDataSetInputs(Dataset *dataset, double minAllowed, double maxAllowed,
                                      double *minData, double *maxData)
 {
-    // for(int i=0; i<dataset->nOfPatterns;i++){
-    //     cout<<"Valor: "<<i <<" "<<minData[i]<<endl;
-    // }
 
     for (int i = 0; i < dataset->nOfPatterns; i++){
         for (int j = 0; j < dataset->nOfInputs; j++){
@@ -149,7 +152,6 @@ void util::minMaxScalerDataSetInputs(Dataset *dataset, double minAllowed, double
 void util::minMaxScalerDataSetOutputs(Dataset *dataset, double minAllowed, double maxAllowed,
                                       double minData, double maxData)
 {
-
     for (int i = 0; i < dataset->nOfPatterns; i++){
         for (int j = 0; j < dataset->nOfOutputs; j++){
                 dataset->outputs[i][j] = minMaxScaler(dataset->outputs[i][j],minAllowed,maxAllowed,minData,maxData);
@@ -160,48 +162,40 @@ void util::minMaxScalerDataSetOutputs(Dataset *dataset, double minAllowed, doubl
 
 // ------------------------------
 // Get a vector of minimum values of the dataset inputs
-double *util::minDatasetInputs(Dataset *dataset)
+void util::minDatasetInputs(Dataset *dataset, double *minTrainInput)
 {
-    double *minValues[dataset->nOfPatterns];
 
     for (int i = 0; i < dataset->nOfPatterns; i++){
-        minValues[i] =new double(99999999999.0) ;
+        minTrainInput[i] = 99999999999.0 ;
     }
 
     for (int i = 0; i < dataset->nOfPatterns; i++){
         for (int j = 0; j < dataset->nOfInputs; j++){
-            if(dataset->inputs[i][j] < *minValues[i]){
-                minValues[i] = new double(dataset->inputs[i][j]);
+            if(dataset->inputs[i][j] < minTrainInput[i]){
+                minTrainInput[i] = dataset->inputs[i][j];
             }
         }
     }
 
-    for (int i = 0; i < dataset->nOfPatterns; i++){
-        cout<<"Min value "<<i<< " valor "<< *minValues[i]<<endl;
-    }
-
-    return *minValues;
 }
 
 // ------------------------------
 // Get a vector of maximum values of the dataset inputs
-double *util::maxDatasetInputs(Dataset *dataset)
+void util::maxDatasetInputs(Dataset *dataset, double *maxTrainInput)
 {
-    double *maxValues[dataset->nOfPatterns];
 
     for (int i = 0; i < dataset->nOfPatterns; i++){
-        maxValues[i] = new double(-99999999999.0);
+        maxTrainInput[i] = -99999999999.0;
     }
 
     for (int i = 0; i < dataset->nOfPatterns; i++){
         for (int j = 0; j < dataset->nOfInputs; j++){
-            if(dataset->inputs[i][j] > *maxValues[i]){
-                maxValues[i] = new double(dataset->inputs[i][j]);
+            if(dataset->inputs[i][j] > maxTrainInput[i]){
+                maxTrainInput[i] = dataset->inputs[i][j];
             }
         }
     }
 
-    return *maxValues;
 }
 
 // ------------------------------

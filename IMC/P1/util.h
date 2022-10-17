@@ -69,9 +69,9 @@ namespace util
                                     double minData, double maxData);
 
     // Get a vector of maximum values of the dataset inputs
-    double *maxDatasetInputs(Dataset *dataset);
+    void maxDatasetInputs(Dataset *dataset, double *minTrainInput);
     // Get a vector of minimum values of the dataset inputs
-    double *minDatasetInputs(Dataset *dataset);
+    void minDatasetInputs(Dataset *dataset, double *maxTrainInput);
     // Get the minimum value of the dataset outputs
     double minDatasetOutputs(Dataset *dataset);
     // Get the maximum value of the dataset outputs

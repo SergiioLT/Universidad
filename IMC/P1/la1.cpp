@@ -15,8 +15,8 @@
 #include <string.h>
 #include <math.h>
 
-#include "imc/MultilayerPerceptron.h"
-#include "imc/util.h"
+#include "MultilayerPerceptron.h"
+#include "util.h"
 
 
 using namespace imc;
@@ -108,7 +108,6 @@ int main(int argc, char **argv) {
 
         Dataset * trainDataset; 
         Dataset * testDataset;
-
         double minTrainOutput, maxOutput;
 
 
@@ -118,39 +117,26 @@ int main(int argc, char **argv) {
             trainDataset = readData(TrainFilename); 
             testDataset = readData(TestFilename);
         }else{
-            // trainDataset = readData(TrainFilename); 
-            // testDataset = readData(TestFilename);
-            // double *minTrainInput, *maxTrainInput;
+            trainDataset = readData(TrainFilename); 
+            testDataset = readData(TestFilename);
+            double minTrainInput[trainDataset->nOfPatterns], maxTrainInput[trainDataset->nOfPatterns];
 
-            // cout<<"Antes de normalizar"<<endl;
-            // printDataset(trainDataset,trainDataset->nOfPatterns);
+            printDataset(trainDataset, trainDataset->nOfPatterns);
+            minDatasetInputs(trainDataset, minTrainInput);
+            maxDatasetInputs(trainDataset, maxTrainInput);
 
-            // //Normalize train dataset
-            // // minTrainInput = minDatasetInputs(trainDataset);
-            // // maxTrainInput = maxDatasetInputs(trainDataset);
-            // cout<<"Antes de normalizar"<<endl;
-            // minTrainInput = minDatasetInputs(trainDataset);
+            minTrainOutput = minDatasetOutputs(trainDataset);
+            maxOutput =  maxDatasetOutputs(trainDataset);
 
-            // for(int i=0; i<trainDataset->nOfPatterns;i++){
-            //     cout<<"Valor en el main : "<<i <<" "<<minTrainInput[i]<<endl;
-            // }
-
-            // maxTrainInput = maxDatasetInputs(trainDataset);
-
-            // minTrainOutput = minDatasetOutputs(trainDataset);
-            // maxOutput =  maxDatasetOutputs(trainDataset);
-
-            // minMaxScalerDataSetInputs(trainDataset, -1, 1, minTrainInput ,maxTrainInput);
-            // minMaxScalerDataSetInputs(testDataset, 0, 1, minTrainInput, maxTrainInput);
+            minMaxScalerDataSetInputs(trainDataset, -1, 1, minTrainInput ,maxTrainInput);            
+            minMaxScalerDataSetOutputs(trainDataset, 0, 1, minTrainOutput, maxOutput);
             
-            // minMaxScalerDataSetOutputs(trainDataset, -1, 1, minTrainOutput, maxOutput);
-            // minMaxScalerDataSetOutputs(testDataset, 0, 1, minTrainOutput, maxOutput);
+            minMaxScalerDataSetInputs(testDataset, -1, 1, minTrainInput, maxTrainInput);
+            minMaxScalerDataSetOutputs(testDataset, 0, 1, minTrainOutput, maxOutput);
 
-            // cout<<"Despues de normalizar"<<endl;
-            // printDataset(trainDataset,trainDataset->nOfPatterns);
+            printDataset(trainDataset,trainDataset->nOfPatterns);
 
         }
-
 
         // Initialize topology vector
     	int layers = hiddenLayer; 
@@ -165,7 +151,7 @@ int main(int argc, char **argv) {
         // Initialize the network using the topology vector
         mlp.initialize(layers+2,topology);
 
-
+        cout<<"flag"<<endl;
         // Seed for random numbers
         int seeds[] = {1,2,3,4,5};
         double *testErrors = new double[5];
