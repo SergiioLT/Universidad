@@ -1,0 +1,68 @@
+ForwardPropagate()
+Start
+sumNet = 0
+net = 0
+    for i from 1 to H //For each layer
+        sumNet = 0
+        for j from 0 to nh //For each neuron of layer h
+            net = 0
+            for k from 1 to nh-1 //For each neuron of layer h-1
+                net += layers[i].neurons[j].w[k] * layers[i-1].neurons[k-1].out;
+            end for
+            net += layers[i].neurons[j].w[0]; //We add BIAS
+            if i == H-1 && outputFunction == Softmax then
+                layers[i].neurons[j].out = exp(net);
+                sumNet += exp(net);
+            else
+                layers[i].neurons[j].out = 1 / (1+exp(-net));
+            end if
+        end for
+
+        if i == H-1 && outputFunction == Softmax then
+            for j from 0 to nh+1 //For each neuron of layer +1 (BIAS)
+                layers[i].neurons[j].out /= sumNet;
+            end for
+        end if
+    end for
+end
+
+obtainError(double* target, int errorFunction)
+Start
+size = nh-1 //Number of neurons from layer -1
+getOutputs(pred) //We obtain the desire outputs
+    if errorFunction == MSE then
+        mse = 0.0
+        for i from 0 to size
+            mse += pow((pred[i] - target[i]),2);
+        end for
+        return mse/size
+    end if
+    if errorFunction == Cross then
+        cen = 0.0
+        for i from 0 to size
+            cen += (target[i]*log(pred[i]));
+        end for
+        return cen/size 
+    end if 
+END
+
+backpropageteError()
+Start 
+softCase = 0
+    for i from 0 to nH-1 //For each neuron of the layer-1
+        sum = 0.0
+        for j from 0 to nH-1 //For each neuron of the layer-1
+            if i=j then 
+                softCase == 1
+            else 
+                softCase == 0
+            end if 
+            if errorFunction == 0 then 
+				sum += ((target[j] - layers[nOfLayers-1].neurons[j].out) * layers[nOfLayers-1].neurons[i].out * (softCase - layers[nOfLayers-1].neurons[j].out));
+            else 
+				sum += ((target[j] / layers[nOfLayers-1].neurons[j].out) * layers[nOfLayers-1].neurons[i].out * (softCase - layers[nOfLayers-1].neurons[j].out));
+            end if 
+        end for 
+        layers[nOfLayers-1].neurons[i].delta = -sum;
+    end for
+END

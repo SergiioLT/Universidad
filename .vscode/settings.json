@@ -5,6 +5,7 @@
         "ctime": "cpp",
         "cassert": "cpp",
         "ostream": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "pseudocodes": "cpp"
     }
 }
