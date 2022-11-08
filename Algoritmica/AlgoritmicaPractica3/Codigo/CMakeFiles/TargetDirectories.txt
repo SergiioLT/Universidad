@@ -1,0 +1,3 @@
+/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica3/Codigo/CMakeFiles/rebuild_cache.dir
+/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica3/Codigo/CMakeFiles/edit_cache.dir
+/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica3/Codigo/CMakeFiles/main.dir

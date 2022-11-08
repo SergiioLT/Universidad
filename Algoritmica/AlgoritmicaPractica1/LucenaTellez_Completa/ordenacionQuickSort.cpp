@@ -16,7 +16,6 @@ using namespace std;
 // DEFINICIONES DE FUNCIONES    //
 //////////////////////////////////
 
-
 void tiemposOrdenacionQuickSort(int nMin, int nMax, int repeticiones,int incremento, vector<double> &tiemposReales, vector<double> &numeroElementos);
 void ajusteNlogN(const vector <double> &numeroElementos, const vector <double> &tiemposReales, vector <double> &a);
 void calcularTiemposEstimadosNlogN(const vector<double> &numeroElementos, const vector<double> &tiemposReales,const vector<double> &a, vector<double> &tiemposEstimados);

@@ -185,11 +185,11 @@ void MultilayerPerceptron::backpropagateError(double* target) {
 		layers[nOfLayers-1].neurons[i].delta = -(target[i]-out)*out*(1-out);
 	}
 
-	for(int i=nOfLayers-2; i>=1; i--){ 
-		for(int j=0; j<layers[i].nOfNeurons; j++){
+        for(int i=nOfLayers-2; i>=1; i--){ //Penultima
+                for(int j=0; j<layers[i].nOfNeurons+1; j++){
 			double out = layers[i].neurons[j].out;
 			double sum = 0.0;
-			for(int k=0; k<layers[i-1].nOfNeurons;k++){
+                        for(int k=0; k<layers[i+1].nOfNeurons;k++){ //Numero de neuronas
 				sum += layers[i+1].neurons[k].w[j+1]*layers[i+1].neurons[k].delta;
 			}
 			layers[i].neurons[j].delta = sum*(1-out)*out;

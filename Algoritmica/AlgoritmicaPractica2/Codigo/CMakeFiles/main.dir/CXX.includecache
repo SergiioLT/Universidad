@@ -10,13 +10,7 @@
 math.h
 -
 
-/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica2/Codigo/recta.hpp
-cassert
--
-punto.hpp
-/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica2/Codigo/punto.hpp
-
-/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica2/Codigo/segmentacionmetsegundo.cpp
+/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica2/Codigo/segmentacionmetprimero.cpp
 vector
 -
 algorithm
@@ -35,8 +29,6 @@ cassert
 -
 serietemporal.hpp
 /home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica2/Codigo/serietemporal.hpp
-recta.hpp
-/home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica2/Codigo/recta.hpp
 
 /home/i72lutes/Descargas/Universidad/Algoritmica/AlgoritmicaPractica2/Codigo/serietemporal.hpp
 vector
