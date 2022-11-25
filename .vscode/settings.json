@@ -4,6 +4,7 @@
         "iostream": "cpp",
         "ctime": "cpp",
         "cassert": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "limits": "cpp"
     }
 }
