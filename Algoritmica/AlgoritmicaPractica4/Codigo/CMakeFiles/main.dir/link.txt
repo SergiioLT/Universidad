@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/main.dir/main.cpp.o CMakeFiles/main.dir/punto.cpp.o CMakeFiles/main.dir/recta.cpp.o CMakeFiles/main.dir/segmentacionmetprimero.cpp.o CMakeFiles/main.dir/serietemporal.cpp.o  -o main 
