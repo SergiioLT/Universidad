@@ -1,3 +1,0 @@
-/home/serlute/Descargas/Universidad/Algoritmica/MaterialPractica4/Codigo/CMakeFiles/main.dir
-/home/serlute/Descargas/Universidad/Algoritmica/MaterialPractica4/Codigo/CMakeFiles/edit_cache.dir
-/home/serlute/Descargas/Universidad/Algoritmica/MaterialPractica4/Codigo/CMakeFiles/rebuild_cache.dir
