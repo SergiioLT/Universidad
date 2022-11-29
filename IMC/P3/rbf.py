@@ -12,11 +12,41 @@ IMC: lab assignment 3
 import pickle
 import os
 
+import numpy as np
+import pandas as pd
+from numpy.lib.index_tricks import r_
+
+from sklearn.model_selection import train_test_split
+from sklearn.cluster import KMeans
+from sklearn.linear_model import LogisticRegression
+from fairlearn.metrics import MetricFrame
+from sklearn.metrics import accuracy_score
+
+from scipy.spatial.distance import pdist
+from scipy.spatial.distance import squareform
+
+import click
+from click.decorators import help_option
+
+
+
 @click.command()
 @click.option('--train_file', '-t', default=None, required=False,
               help=u'Name of the file with training data.')
-
-# TODO Include the rest of parameters...
+@click.option('--test_file', '-T', default=None, required=True,
+              help=u'Name of the file with test data.')
+@click.option('--classification', '-c', default=None, required=False, is_flag=True,
+              help=u'The problem considered is a classification problem.')
+@click.option('--ratio_rbf', '-r', default=0.1, required=False,
+              help=u'Ratio of RBF neurons (as a fraction of 1) with respect to the total number of patterns.')
+@click.option('--l2', '-l', default=False, required=False,is_flag=True,
+              help=u'Sse L2 regularization instead of L1 (logistic regression)')
+@click.option('--eta', '-e', default=0.01, required=False,
+              help=u'Value of the regularization parameter for logistic regression')
+@click.option('--fairness', '-f', default=None, required=False,is_flag=True,
+              help=u'Evaluates prediction using fairlern metrics. It is assumed that last input variable is the group variable.')
+@click.option('--outputs', '-o', default=1, required=False,
+              help=u'Number of columns that will be used as target variables (all at the end).')
 
 @click.option('--pred', '-p', is_flag=True, default=False, show_default=True,
               help=u'Use the prediction mode.') # KAGGLE
@@ -159,6 +189,7 @@ def train_rbf(train_file, test_file, classification, ratio_rbf, l2, eta, fairnes
                                                                         test_file,
                                                                         outputs)
 
+    #TODO: Obtain num_rbf from ratio_rbf
     num_rbf = int(ratio_rbf * len(train_inputs))
     print("Number of RBFs used: %d" %(num_rbf))
     # 1. Init centroids + 2. clustering 
@@ -176,7 +207,10 @@ def train_rbf(train_file, test_file, classification, ratio_rbf, l2, eta, fairnes
     else:
         logreg = logreg_classification(r_matrix, train_outputs, l2, eta)
 
-
+    """
+    TODO: Obtain the distances from the centroids to the test patterns
+          and obtain the R matrix for the test set
+    """
     test_r_matrix = calculate_r_matrix(kmeans.transform(test_inputs), radii)
 
     if not classification:
@@ -195,6 +229,16 @@ def train_rbf(train_file, test_file, classification, ratio_rbf, l2, eta, fairnes
         else:
             train_ccr = 0
             test_ccr = 0
+
+        train_results = {
+            'ccr' : train_ccr,
+            'mse' : train_mse}
+        
+        test_results = {
+            'ccr' : test_ccr,
+            'mse' : test_mse}
+        
+        train_results, test_results
     else:
         train_predictions = logreg.predict(r_matrix)
         test_predictions = logreg.predict(test_r_matrix)
@@ -237,6 +281,8 @@ def train_rbf(train_file, test_file, classification, ratio_rbf, l2, eta, fairnes
             
             #TODO: Complete the code for fairness here
 
+            train_results = MetricFrame(metrics=accuracy_score, y_true=train_gender_bin , y_pred=train_predictions, sensitive_features=Gender)
+            test_results = MetricFrame(metrics=accuracy_score, y_true=test_gender_bin, y_pred=test_predictions, sensitive_features=Gender)
 
             # train_results and test results are expected to be a MetricFrame
             return train_results, test_results
@@ -290,22 +336,18 @@ def read_data(train_file, test_file, outputs):
             Matrix containing the outputs for the test patterns
     """
 
-    file_train= pd.read_csv(train_file)
-    file_test= pd.read_csv(test_file)
+    #TODO: Complete the code of the function
 
-    train_set= file_train.to_numpy()
-    test_set= file_test.to_numpy()
+    test_set = np.genfromtxt(test_file, delimiter=',')
+    train_set = np.genfromtxt(train_file, delimiter=',') 
 
-    train_set= train_set.astype(np.float64)
-    test_set= test_set.astype(np.float64)
+    train_inputs = train_set[:,:-outputs]
+    test_inputs = test_set[:,:-outputs]
 
-    train_inputs= train_set[:,:-outputs]
-    test_inputs= test_set[:,:-outputs]
+    test_outputs = test_set[:,test_inputs.shape[1]:]
+    train_outputs = train_set[:,train_inputs.shape[1]:]
 
-    train_outputs= train_set[:,train_inputs.shape[1]:]
-    test_outputs= test_set[:,test_inputs.shape[1]:]
-   
-    return train_inputs, train_outputs, test_inputs, test_outputs
+    return train_inputs, train_outputs, test_inputs, test_outputs 
 
 def init_centroids_classification(train_inputs, train_outputs, num_rbf):
     """ Initialize the centroids for the case of classification
@@ -326,8 +368,9 @@ def init_centroids_classification(train_inputs, train_outputs, num_rbf):
             Matrix with all the centroids already selected
     """
     
+    #TODO: Complete the code of the function
     centroids, xtest, ytrain, ytest = train_test_split(train_inputs, train_outputs, train_size = num_rbf, stratify = train_outputs)
-        
+
     return centroids
 
 def clustering(classification, train_inputs, train_outputs, num_rbf):
@@ -358,8 +401,10 @@ def clustering(classification, train_inputs, train_outputs, num_rbf):
             Centers after the clustering
     """
 
+    #TODO: Complete the code of the function
+
     if not classification:
-        kmeans = KMeans(n_clusters= num_rbf, init='random', n_init=1, max_iter=500).fit(train_inputs, train_outputs)
+        kmeans = KMeans(n_clusters= num_rbf, init='k-means++', n_init=1, max_iter=500).fit(train_inputs, train_outputs)
     else:
         centrods = init_centroids_classification(train_inputs, train_outputs, num_rbf)
         kmeans = KMeans(n_clusters= num_rbf, init = 'k-means++', n_init=1, max_iter=500).fit(train_inputs, train_outputs)
@@ -388,13 +433,15 @@ def calculate_radii(centers, num_rbf):
             Array with the radius of each RBF
     """
 
+    #TODO: Complete the code of the function
     dist = squareform(pdist(centers))
     radii = np.array([],dtype = np.float64)
 
     for x in range(0, num_rbf):
-        sumdist = sum(d[x]) / (2 * (num_rbf - 1))
+        sumdist = sum(dist[x]) / (2 * (num_rbf - 1))
         radii = np.append(radii, sumdist)
     
+
     return radii
 
 def calculate_r_matrix(distances, radii):
@@ -417,6 +464,7 @@ def calculate_r_matrix(distances, radii):
             we include a last column with ones, which is going to act as bias
     """
 
+    #TODO: Complete the code of the function
     r_matrix = np.power(distances, 2)
 
     for i in range(r_matrix.shape[1]):
@@ -449,6 +497,8 @@ def invert_matrix_regression(r_matrix, train_outputs):
             of the bias 
     """
 
+    #TODO: Complete the code of the function
+
     pseudoinverse = np.linalg.pinv(r_matrix)
     coefficients = np.matmul(pseudoinverse, train_outputs)
 
@@ -478,13 +528,14 @@ def logreg_classification(matriz_r, train_outputs, l2, eta):
             Scikit-learn logistic regression model already trained
     """
 
+    #TODO: Complete the code of the function
+
     if l2:
         logreg = LogisticRegression(C=(1/eta), solver='liblinear')
     else:
         logreg = LogisticRegression(penalty='l1', C=(1/eta), solver='liblinear')
     
     logreg.fit(matriz_r, train_outputs.ravel())
-
 
     return logreg
 
