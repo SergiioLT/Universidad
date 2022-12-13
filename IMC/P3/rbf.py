@@ -33,23 +33,31 @@ from click.decorators import help_option
 @click.command()
 @click.option('--train_file', '-t', default=None, required=False,
               help=u'Name of the file with training data.')
+
 @click.option('--test_file', '-T', default=None, required=True,
               help=u'Name of the file with test data.')
-@click.option('--classification', '-c', default=None, required=False, is_flag=True,
+
+@click.option('--classification', '-c', is_flag=True,
               help=u'The problem considered is a classification problem.')
+
 @click.option('--ratio_rbf', '-r', default=0.1, required=False,
               help=u'Ratio of RBF neurons (as a fraction of 1) with respect to the total number of patterns.')
-@click.option('--l2', '-l', default=False, required=False,is_flag=True,
+
+@click.option('--l2', '-l', default=False, required=False, is_flag=True, show_default=True,
               help=u'Sse L2 regularization instead of L1 (logistic regression)')
+
 @click.option('--eta', '-e', default=0.01, required=False,
               help=u'Value of the regularization parameter for logistic regression')
-@click.option('--fairness', '-f', default=None, required=False,is_flag=True,
+
+@click.option('--fairness', '-f', default=None, required=False, is_flag=True,
               help=u'Evaluates prediction using fairlern metrics. It is assumed that last input variable is the group variable.')
-@click.option('--outputs', '-o', default=1, required=False,
+
+@click.option('--outputs', '-o', default=1, required=False, show_default=True,
               help=u'Number of columns that will be used as target variables (all at the end).')
 
 @click.option('--pred', '-p', is_flag=True, default=False, show_default=True,
               help=u'Use the prediction mode.') # KAGGLE
+
 @click.option('--model', '-m', default="", show_default=False,
               help=u'Directory name to save the models (or name of the file to load the model, if the prediction mode is active).') # KAGGLE
 
@@ -281,8 +289,16 @@ def train_rbf(train_file, test_file, classification, ratio_rbf, l2, eta, fairnes
             
             #TODO: Complete the code for fairness here
 
-            train_results = MetricFrame(metrics=accuracy_score, y_true=train_gender_bin , y_pred=train_predictions, sensitive_features=Gender)
-            test_results = MetricFrame(metrics=accuracy_score, y_true=test_gender_bin, y_pred=test_predictions, sensitive_features=Gender)
+            # def fairness_metrics(df):
+            #             
+            # #Confusion Matrix
+            # cm=confusion_matrix(df['y'],df['y_pred'])
+            # TN, FP, FN, TP = cm.ravel()
+            # FNR = FN/(TP+FN) # False negative rate            
+            # return np.array(FNR)
+
+            # train_results = MetricFrame(metrics=accuracy_score, y_true=train_gender_bin , y_pred=train_predictions, sensitive_features=Gender)
+            # test_results = MetricFrame(metrics=accuracy_score, y_true=test_gender_bin, y_pred=test_predictions, sensitive_features=Gender)
 
             # train_results and test results are expected to be a MetricFrame
             return train_results, test_results
@@ -404,10 +420,10 @@ def clustering(classification, train_inputs, train_outputs, num_rbf):
     #TODO: Complete the code of the function
 
     if not classification:
-        kmeans = KMeans(n_clusters= num_rbf, init='k-means++', n_init=1, max_iter=500).fit(train_inputs, train_outputs)
+        kmeans = KMeans(n_clusters= num_rbf, init='random', n_init=1, max_iter=500).fit(train_inputs, train_outputs)
     else:
         centrods = init_centroids_classification(train_inputs, train_outputs, num_rbf)
-        kmeans = KMeans(n_clusters= num_rbf, init = 'k-means++', n_init=1, max_iter=500).fit(train_inputs, train_outputs)
+        kmeans = KMeans(n_clusters= num_rbf, init = 'random', n_init=1, max_iter=500).fit(train_inputs, train_outputs)
     
     centers= kmeans.cluster_centers_
     distances= kmeans.transform(train_inputs)
@@ -531,7 +547,7 @@ def logreg_classification(matriz_r, train_outputs, l2, eta):
     #TODO: Complete the code of the function
 
     if l2:
-        logreg = LogisticRegression(C=(1/eta), solver='liblinear')
+        logreg = LogisticRegression(penalty='l2', C=(1/eta), solver='liblinear')
     else:
         logreg = LogisticRegression(penalty='l1', C=(1/eta), solver='liblinear')
     
