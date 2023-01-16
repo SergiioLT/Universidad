@@ -289,14 +289,6 @@ def train_rbf(train_file, test_file, classification, ratio_rbf, l2, eta, fairnes
             
             #TODO: Complete the code for fairness here
 
-            # def fairness_metrics(df):
-            #             
-            # #Confusion Matrix
-            # cm=confusion_matrix(df['y'],df['y_pred'])
-            # TN, FP, FN, TP = cm.ravel()
-            # FNR = FN/(TP+FN) # False negative rate            
-            # return np.array(FNR)
-
             # train_results = MetricFrame(metrics=accuracy_score, y_true=train_gender_bin , y_pred=train_predictions, sensitive_features=Gender)
             # test_results = MetricFrame(metrics=accuracy_score, y_true=test_gender_bin, y_pred=test_predictions, sensitive_features=Gender)
 
