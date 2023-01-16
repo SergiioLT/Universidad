@@ -1,0 +1,3 @@
+/home/serlute/Descargas/Universidad/Algoritmica/AlgoritmicaPractica5/LucenaTellez/CMakeFiles/main.dir
+/home/serlute/Descargas/Universidad/Algoritmica/AlgoritmicaPractica5/LucenaTellez/CMakeFiles/edit_cache.dir
+/home/serlute/Descargas/Universidad/Algoritmica/AlgoritmicaPractica5/LucenaTellez/CMakeFiles/rebuild_cache.dir
